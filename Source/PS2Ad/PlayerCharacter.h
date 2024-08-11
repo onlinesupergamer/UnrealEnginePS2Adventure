@@ -56,6 +56,8 @@ protected:
 	float		m_Timebffr		=			0.0f;
 	float		m_TimerThing	=			0.0f;
 	float		m_BlastRadius	=			200.0f;
+	float		m_Checkradius	=			500.0f;
+	bool		m_bIsTargeting	=			false;
 
 
 
@@ -74,8 +76,8 @@ protected:
 	void SwordAttack();
 	void BlastFire(FVector HitLocation);
 	float QLerp(float f1, float f2, float LerpSpeed);
-	
-
-
+	void CameraLockToTarget();
+	void Target();
+	void UnTarget();
 
 };

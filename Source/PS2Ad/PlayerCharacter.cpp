@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Interfaces.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 
@@ -13,7 +14,7 @@
 
 
 
-// Sets default values
+
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -51,6 +52,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	FallCheck();
 	HandleAiming();
+	CameraLockToTarget();
+
 
 	
 }
@@ -69,6 +72,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("GamepadFire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &APlayerCharacter::SwordAttack);
+	PlayerInputComponent->BindAction("LockCamera", IE_Pressed, this, &APlayerCharacter::Target);
 
 }
 
@@ -76,29 +80,18 @@ void APlayerCharacter::MoveForward(float Value)
 {
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator Yaw(0, Rotation.Yaw, 0);
-
 	FVector MovementDirection = FRotationMatrix(Yaw).GetUnitAxis(EAxis::X);
-
 	AddMovementInput(MovementDirection, Value);
-
-
 	PlayerControllerInput.X = Value;
-	
-
 }
 
 void APlayerCharacter::MoveRight(float Value) 
 {
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator Yaw(0, Rotation.Yaw, 0);
-
 	FVector MovementDirection = FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y);
-
 	AddMovementInput(MovementDirection, Value);
-
 	PlayerControllerInput.Y = Value;
-
-
 }
 
 void APlayerCharacter::LookUp(float Value) 
@@ -110,8 +103,6 @@ void APlayerCharacter::LookUp(float Value)
 void APlayerCharacter::LookRight(float Value) 
 {
 	AddControllerYawInput(Value * LookRate * GetWorld()->GetDeltaSeconds());
-
-
 }
 
 void APlayerCharacter::FallCheck() 
@@ -132,8 +123,6 @@ void APlayerCharacter::Aim()
 	{
 		bIsAiming = true;
 	}
-
-
 }
 
 void APlayerCharacter::StopAim() 
@@ -295,7 +284,77 @@ void APlayerCharacter::SwordAttack()
 
 		}
 	}
+}
 
+void APlayerCharacter::CameraLockToTarget() 
+{
+	TArray<AActor*> Ignore;
+	AActor* ClosestActor = nullptr;
+	TArray<FHitResult> HitArray;
+	Ignore.Add(this);
+	float ClosestDistance = m_Checkradius; //This is currently set to the m_CheckRadius value
+	float Distance = 0.0f;
+
+
+	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
+		EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 5.0f)) 
+	{
+		for (int i = 0; i < HitArray.Num(); i++) 
+		{
+			Distance = GetDistanceTo(HitArray[i].GetActor());
+
+			if (Distance < ClosestDistance) 
+			{
+				ClosestDistance = Distance;
+				ClosestActor = HitArray[i].GetActor();
+				
+			}
+
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, GREEN, FString::SanitizeFloat(ClosestDistance));
+		if (ClosestActor != nullptr) 
+		{
+			FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), ClosestActor->GetActorLocation());
+
+			m_LookRotation.Roll = 0;
+			m_LookRotation.Pitch = 0;
+			SetActorRotation(m_LookRotation);
+
+		}
+
+	}
+	/*
+		DO NOT do this on tick, this will tank performance
+		Need to find a way to pass the closest actor to a function in the tick to
+		update the known location of it every frame, AFTER it has been found
+	
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	*/
+}
+
+void APlayerCharacter::Target() 
+{
+	if (!m_bIsTargeting) 
+	{
+		m_bIsTargeting = true;
+	}
+
+	else
+	{
+		m_bIsTargeting = false;
+	}
+}
+
+void APlayerCharacter::UnTarget() 
+{
+
+	
 }
 
 
