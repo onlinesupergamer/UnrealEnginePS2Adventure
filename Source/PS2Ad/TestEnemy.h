@@ -24,6 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Damage(float Damage) override;
 	virtual void BlastDamage(float Damage) override;
+	virtual void SwordDamage(float Damage) override;
 	void HealthCheck();
 	void KillEnemy();
 

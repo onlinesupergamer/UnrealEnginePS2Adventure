@@ -24,6 +24,7 @@ class PS2AD_API IInterfaces
 public:
 	virtual void Damage(float Damage) {}
 	virtual void BlastDamage(float Damage) {}
+	virtual void SwordDamage(float Damage) {}
 
 
 

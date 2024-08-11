@@ -19,7 +19,14 @@ void ATestEnemy::BeginPlay()
 	
 }
 
-// Called every frame
+/*
+	The damage functions from the interface are redundant
+	It may be better to just create a simple function for damage
+
+
+
+*/
+
 void ATestEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -42,6 +49,14 @@ void ATestEnemy::BlastDamage(float Damage)
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::FromInt(Health));
 
 
+}
+
+void ATestEnemy::SwordDamage(float Damage) 
+{
+	Health -= Damage;
+	Health = FMath::Clamp(Health, 0.0f, 100.0f);
+	HealthCheck();
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::FromInt(Health));
 }
 
 void ATestEnemy::HealthCheck() 

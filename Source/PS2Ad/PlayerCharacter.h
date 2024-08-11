@@ -33,6 +33,7 @@ public:
 	bool		bIsTransitioning	=		false;
 	float		DirectRifleDamage	=		20.0f;
 	float		RifleBlastDamage	=		12.0f;
+	float		SwordDamage			=		15.0f;
 	
 
 

@@ -16,7 +16,6 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
@@ -253,7 +252,7 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), m_HitLocation, m_HitLocation, 500.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
 		EDrawDebugTrace::ForDuration, HitArray, true, FColor::Red, FColor::Blue, 3.5f))
 	{
-		for (const FHitResult HitResult : HitArray)
+		for (const FHitResult &HitResult : HitArray)
 		{
 			if (IInterfaces* interfaces = Cast<IInterfaces>(HitResult.Actor)) 
 			{
@@ -262,6 +261,7 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 
 			/*
 				This may be expensive so might want to see about fixing this later
+				Edit: nvm, I just forgot to use it as a reference
 			
 			*/
 		
@@ -275,8 +275,25 @@ void APlayerCharacter::SwordAttack()
 {
 	if (!bIsAiming) 
 	{
-		
+		FVector CheckLocation = GetActorLocation() + (GetActorForwardVector() * 85);
 
+		TArray<FHitResult> HitArray;
+		TArray<AActor*> ActorToIgnore;
+		ActorToIgnore.Add(this);
+
+		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), CheckLocation, CheckLocation, 75, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
+			EDrawDebugTrace::ForDuration, HitArray, true, FColor::Yellow, FColor::Purple, 3.5f)) 
+		{
+			for (const FHitResult &HitResult : HitArray)
+			{
+				if (IInterfaces* interfaces = Cast<IInterfaces>(HitResult.Actor))
+				{
+					interfaces->SwordDamage(SwordDamage);
+				}
+
+			}
+
+		}
 	}
 
 }
