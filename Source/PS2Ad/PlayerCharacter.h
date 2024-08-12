@@ -58,6 +58,8 @@ protected:
 	float		m_BlastRadius	=			200.0f;
 	float		m_Checkradius	=			500.0f;
 	bool		m_bIsTargeting	=			false;
+	bool		m_bCanTarget	=			true;
+	AActor*		m_Target		=			nullptr;
 
 
 
@@ -78,6 +80,5 @@ protected:
 	float QLerp(float f1, float f2, float LerpSpeed);
 	void CameraLockToTarget();
 	void Target();
-	void UnTarget();
 
 };

@@ -54,8 +54,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	HandleAiming();
 	CameraLockToTarget();
 
-
-	
 }
 
 
@@ -160,6 +158,8 @@ void APlayerCharacter::HandleAiming()
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 200.0f, 0.15f);
 
+		m_bCanTarget = false;
+
 	}
 
 	if (!bIsAiming)
@@ -180,6 +180,7 @@ void APlayerCharacter::HandleAiming()
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 400.0f, 0.15f);
 
+		m_bCanTarget = true;
 	}
 
 	CharacterAimRotation(bIsAiming);
@@ -249,8 +250,8 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 			}
 
 			/*
-				This may be expensive so might want to see about fixing this later
-				Edit: nvm, I just forgot to use it as a reference
+				This is expensive so might want to see about fixing this later
+				Edit: nvm, I just forgot to use the array as a reference
 			
 			*/
 		
@@ -288,54 +289,29 @@ void APlayerCharacter::SwordAttack()
 
 void APlayerCharacter::CameraLockToTarget() 
 {
-	TArray<AActor*> Ignore;
-	AActor* ClosestActor = nullptr;
-	TArray<FHitResult> HitArray;
-	Ignore.Add(this);
-	float ClosestDistance = m_Checkradius; //This is currently set to the m_CheckRadius value
-	float Distance = 0.0f;
-
-
-	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
-		EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 5.0f)) 
+	if (m_bIsTargeting && IsValid(m_Target) && m_bCanTarget) 
 	{
-		for (int i = 0; i < HitArray.Num(); i++) 
-		{
-			Distance = GetDistanceTo(HitArray[i].GetActor());
 
-			if (Distance < ClosestDistance) 
-			{
-				ClosestDistance = Distance;
-				ClosestActor = HitArray[i].GetActor();
-				
-			}
-
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, GREEN, FString::SanitizeFloat(ClosestDistance));
-		if (ClosestActor != nullptr) 
-		{
-			FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), ClosestActor->GetActorLocation());
-
-			m_LookRotation.Roll = 0;
-			m_LookRotation.Pitch = 0;
-			SetActorRotation(m_LookRotation);
-
-		}
-
+		FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), m_Target->GetActorLocation());
+		m_LookRotation.Roll = 0;
+		m_LookRotation.Pitch = 0;
+		SetActorRotation(m_LookRotation);
+	
 	}
-	/*
-		DO NOT do this on tick, this will tank performance
-		Need to find a way to pass the closest actor to a function in the tick to
-		update the known location of it every frame, AFTER it has been found
-	
-	
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
-	
-	*/
+
+	else if (!IsValid(m_Target)) 
+	{
+		m_bIsTargeting = false;
+		m_Target = nullptr;
+	}
+
+	if (bIsAiming)
+	{
+		m_bIsTargeting = false;
+		m_Target = nullptr;
+		//Might be a good idea to automatically retarget when not aiming
+	}
+
 }
 
 void APlayerCharacter::Target() 
@@ -343,18 +319,56 @@ void APlayerCharacter::Target()
 	if (!m_bIsTargeting) 
 	{
 		m_bIsTargeting = true;
+
+		TArray<AActor*> Ignore;
+		AActor* ClosestActor = nullptr;
+		TArray<FHitResult> HitArray;
+		Ignore.Add(this);
+		float ClosestDistance = m_Checkradius; //This is currently set to the m_CheckRadius value
+		float Distance = 0.0f;
+
+
+		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
+			EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 5.0f))
+		{
+			for (int i = 0; i < HitArray.Num(); i++)
+			{
+				Distance = GetDistanceTo(HitArray[i].GetActor());
+
+				if (Distance < ClosestDistance)
+				{
+					ClosestDistance = Distance;
+					ClosestActor = HitArray[i].GetActor();
+					m_Target = ClosestActor;
+
+				}
+
+			}
+			if (ClosestActor == nullptr)
+			{
+
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, GREEN, TEXT("No Actor Found To Target"));
+			}
+
+		}
+
+
+		/*
+			DO NOT do this on tick, this will tank performance
+			Need to pass the closest actor to a function in the tick to
+			update the known location of it every frame, AFTER it has been found
+
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		*/
+
 	}
 
 	else
 	{
 		m_bIsTargeting = false;
 	}
-}
-
-void APlayerCharacter::UnTarget() 
-{
-
-	
 }
 
 
