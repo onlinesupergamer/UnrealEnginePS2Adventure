@@ -305,6 +305,9 @@ void APlayerCharacter::CameraLockToTarget()
 		m_LookRotation.Roll = 0;
 		m_LookRotation.Pitch = 0;
 		SetActorRotation(m_LookRotation);
+		/*
+			The player rotation needs to be slerped over time, he snaps to face the target currently
+		*/
 		
 	
 	}
@@ -340,7 +343,7 @@ void APlayerCharacter::TargetScan()
 	if (!m_bIsTargeting) 
 	{
 		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
-			EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 0.0f))
+			EDrawDebugTrace::None, HitArray, true, GREEN, FColor::Red, 0.0f))
 		{
 			for (int i = 0; i < HitArray.Num(); i++)
 			{
