@@ -29,6 +29,8 @@ public:
 	float		LookRate			=		45.0f;
 	bool		bIsPlayerFalling	=		false;
 	FVector2D	PlayerControllerInput;
+
+	UPROPERTY(BlueprintReadOnly)
 	bool		bIsAiming			=		false;
 	bool		bIsTransitioning	=		false;
 	float		DirectRifleDamage	=		20.0f;
@@ -55,14 +57,13 @@ protected:
 
 	float		m_Timebffr		=			0.0f;
 	float		m_TimerThing	=			0.0f;
-	float		m_BlastRadius	=			200.0f;
+	float		m_BlastRadius	=			150.0f;
 	float		m_Checkradius	=			500.0f;
+
+	UPROPERTY(BlueprintReadOnly)
 	bool		m_bIsTargeting	=			false;
 	bool		m_bCanTarget	=			true;
 	AActor*		m_Target		=			nullptr;
-
-
-
 
 
 	void MoveForward(float Value);
@@ -80,5 +81,7 @@ protected:
 	float QLerp(float f1, float f2, float LerpSpeed);
 	void CameraLockToTarget();
 	void Target();
+	void TargetScan();
+	void SwitchCurrentTarget(float Value);
 
 };

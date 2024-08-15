@@ -10,6 +10,8 @@
 
 
 
+
+
 #define GREEN FColor::Green
 
 
@@ -44,7 +46,6 @@ void APlayerCharacter::BeginPlay()
 	
 }
 
-
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -53,6 +54,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	FallCheck();
 	HandleAiming();
 	CameraLockToTarget();
+	TargetScan();
 
 }
 
@@ -71,6 +73,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("GamepadFire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &APlayerCharacter::SwordAttack);
 	PlayerInputComponent->BindAction("LockCamera", IE_Pressed, this, &APlayerCharacter::Target);
+	PlayerInputComponent->BindAxis("SwitchTarget", this, &APlayerCharacter::SwitchCurrentTarget);
+
+
+
 
 }
 
@@ -239,7 +245,7 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 	TArray<AActor*> ActorToIgnore;
 	ActorToIgnore.Add(this);
 
-	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), m_HitLocation, m_HitLocation, 500.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
+	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), m_HitLocation, m_HitLocation, m_BlastRadius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
 		EDrawDebugTrace::ForDuration, HitArray, true, FColor::Red, FColor::Blue, 3.5f))
 	{
 		for (const FHitResult &HitResult : HitArray)
@@ -250,7 +256,7 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 			}
 
 			/*
-				This is expensive so might want to see about fixing this later
+				This is slow so might want to see about fixing this later
 				Edit: nvm, I just forgot to use the array as a reference
 			
 			*/
@@ -289,13 +295,17 @@ void APlayerCharacter::SwordAttack()
 
 void APlayerCharacter::CameraLockToTarget() 
 {
+
+
 	if (m_bIsTargeting && IsValid(m_Target) && m_bCanTarget) 
 	{
+
 
 		FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), m_Target->GetActorLocation());
 		m_LookRotation.Roll = 0;
 		m_LookRotation.Pitch = 0;
 		SetActorRotation(m_LookRotation);
+		
 	
 	}
 
@@ -303,33 +313,34 @@ void APlayerCharacter::CameraLockToTarget()
 	{
 		m_bIsTargeting = false;
 		m_Target = nullptr;
+		
+
 	}
 
 	if (bIsAiming)
 	{
 		m_bIsTargeting = false;
 		m_Target = nullptr;
+		
 		//Might be a good idea to automatically retarget when not aiming
 	}
 
 }
 
-void APlayerCharacter::Target() 
+void APlayerCharacter::TargetScan() 
 {
+	TArray<AActor*> Ignore;
+	AActor* ClosestActor = nullptr;
+	TArray<FHitResult> HitArray;
+	Ignore.Add(this);
+	float ClosestDistance = m_Checkradius;
+	float Distance = 0.0f;
+
+
 	if (!m_bIsTargeting) 
 	{
-		m_bIsTargeting = true;
-
-		TArray<AActor*> Ignore;
-		AActor* ClosestActor = nullptr;
-		TArray<FHitResult> HitArray;
-		Ignore.Add(this);
-		float ClosestDistance = m_Checkradius; //This is currently set to the m_CheckRadius value
-		float Distance = 0.0f;
-
-
 		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
-			EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 5.0f))
+			EDrawDebugTrace::ForDuration, HitArray, true, GREEN, FColor::Red, 0.0f))
 		{
 			for (int i = 0; i < HitArray.Num(); i++)
 			{
@@ -347,28 +358,36 @@ void APlayerCharacter::Target()
 			if (ClosestActor == nullptr)
 			{
 
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, GREEN, TEXT("No Actor Found To Target"));
+
 			}
 
 		}
+	}
+}
+
+void APlayerCharacter::Target() 
+{
+	FVector CamOffset(0, 65, 75);
+	FVector NewOffset(0, 0, 75);
 
 
-		/*
-			DO NOT do this on tick, this will tank performance
-			Need to pass the closest actor to a function in the tick to
-			update the known location of it every frame, AFTER it has been found
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		*/
+	if (!m_bIsTargeting) 
+	{
+		m_bIsTargeting = true;
+		//CameraArm->SocketOffset = CamOffset;
 
 	}
 
 	else
 	{
 		m_bIsTargeting = false;
+		//CameraArm->SocketOffset = NewOffset;
 	}
+}
+
+void APlayerCharacter::SwitchCurrentTarget(float Value) 
+{
+	
 }
 
 
@@ -377,4 +396,6 @@ float APlayerCharacter::QLerp(float l1, float l2, float LerpSpeed)
 	float f = FMath::Lerp(l1, l2, (1.0f / LerpSpeed) * GetWorld()->DeltaTimeSeconds);
 	return f;
 }
+
+
 
