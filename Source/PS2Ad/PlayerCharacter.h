@@ -18,7 +18,7 @@ class PS2AD_API APlayerCharacter : public ACharacter
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* PlayerCamera;
 
 	UPROPERTY(EditAnywhere)
@@ -26,17 +26,18 @@ public:
 
 
 	UPROPERTY(EditAnywhere)
-	float		LookRate			=		45.0f;
-	bool		bIsPlayerFalling	=		false;
+	float		LookRate = 45.0f;
+	bool		bIsPlayerFalling = false;
 	FVector2D	PlayerControllerInput;
 
 	UPROPERTY(BlueprintReadOnly)
-	bool		bIsAiming			=		false;
-	bool		bIsTransitioning	=		false;
-	float		DirectRifleDamage	=		20.0f;
-	float		RifleBlastDamage	=		12.0f;
-	float		SwordDamage			=		15.0f;
-	
+	bool		bIsAiming = false;
+	bool		bIsTransitioning = false;
+	float		DirectRifleDamage = 20.0f;
+	float		RifleBlastDamage = 12.0f;
+	float		SwordDamage = 15.0f;
+	FVector		CameraOffset;
+	TArray<FHitResult> TargetArray;
 
 
 
@@ -55,15 +56,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	float		m_Timebffr		=			0.0f;
-	float		m_TimerThing	=			0.0f;
-	float		m_BlastRadius	=			150.0f;
-	float		m_Checkradius	=			500.0f;
+	float		m_Timebffr = 0.0f;
+	float		m_TimerThing = 0.0f;
+	float		m_BlastRadius = 75.0f;
+	float		m_Checkradius = 500.0f;
 
-	UPROPERTY(BlueprintReadOnly)
-	bool		m_bIsTargeting	=			false;
-	bool		m_bCanTarget	=			true;
-	AActor*		m_Target		=			nullptr;
+	UPROPERTY(BlueprintReadWrite)
+	bool		m_bIsTargeting = false;
+	bool		m_bCanTarget = true;
+	AActor* m_Target = nullptr;
 
 
 	void MoveForward(float Value);
@@ -78,10 +79,6 @@ protected:
 	void FireWeapon();
 	void SwordAttack();
 	void BlastFire(FVector HitLocation);
-	float QLerp(float f1, float f2, float LerpSpeed);
-	void CameraLockToTarget();
 	void Target();
-	void TargetScan();
-	void SwitchCurrentTarget(float Value);
-
+	float QLerp(float f1, float f2, float LerpSpeed);
 };

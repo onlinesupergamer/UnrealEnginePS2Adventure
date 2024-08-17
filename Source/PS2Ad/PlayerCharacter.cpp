@@ -7,6 +7,7 @@
 #include "Interfaces.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 
@@ -31,9 +32,9 @@ APlayerCharacter::APlayerCharacter()
 	CameraArm->TargetArmLength = 400.0f;
 
 
-	FVector CamOffset(0, 65, 75);
+	CameraOffset = FVector(0, 35, 75);
 
-	CameraArm->SocketOffset = CamOffset;
+	CameraArm->SocketOffset = CameraOffset;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	
@@ -53,9 +54,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	FallCheck();
 	HandleAiming();
-	CameraLockToTarget();
-	TargetScan();
-
+	
 }
 
 
@@ -72,11 +71,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("GamepadFire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &APlayerCharacter::SwordAttack);
-	PlayerInputComponent->BindAction("LockCamera", IE_Pressed, this, &APlayerCharacter::Target);
-	PlayerInputComponent->BindAxis("SwitchTarget", this, &APlayerCharacter::SwitchCurrentTarget);
-
-
-
+	//PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
 
 }
 
@@ -152,8 +147,11 @@ void APlayerCharacter::HandleAiming()
 	{	
 		if (PlayerCamera->FieldOfView > minFOV)
 		{
+			FVector m_NewLocation(0, 65, 75);
+
 			m_Timebffr += GetWorld()->DeltaTimeSeconds;
-			PlayerCamera->FieldOfView = FMath::Clamp(FMath::Lerp(maxFOV, minFOV, m_Timebffr * 8), minFOV, maxFOV);		
+			PlayerCamera->FieldOfView = FMath::Clamp(FMath::Lerp(maxFOV, minFOV, m_Timebffr * 8), minFOV, maxFOV);
+			CameraArm->SocketOffset = m_NewLocation;
 		}
 
 		else 
@@ -172,9 +170,12 @@ void APlayerCharacter::HandleAiming()
 	{
 		if (PlayerCamera->FieldOfView < maxFOV)
 		{
+			FVector m_NewLocation(0, 35, 75);
+
 			m_Timebffr += GetWorld()->DeltaTimeSeconds;
 			PlayerCamera->FieldOfView = FMath::Clamp(FMath::Lerp(minFOV, maxFOV, m_Timebffr * 8), minFOV, maxFOV);
-			
+			CameraArm->SocketOffset = m_NewLocation;
+
 		}
 
 		else
@@ -293,104 +294,22 @@ void APlayerCharacter::SwordAttack()
 	}
 }
 
-void APlayerCharacter::CameraLockToTarget() 
-{
-
-
-	if (m_bIsTargeting && IsValid(m_Target) && m_bCanTarget) 
-	{
-
-
-		FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), m_Target->GetActorLocation());
-		m_LookRotation.Roll = 0;
-		m_LookRotation.Pitch = 0;
-		SetActorRotation(m_LookRotation);
-		/*
-			The player rotation needs to be slerped over time, he snaps to face the target currently
-		*/
-		
-	
-	}
-
-	else if (!IsValid(m_Target)) 
-	{
-		m_bIsTargeting = false;
-		m_Target = nullptr;
-		
-
-	}
-
-	if (bIsAiming)
-	{
-		m_bIsTargeting = false;
-		m_Target = nullptr;
-		
-		//Might be a good idea to automatically retarget when not aiming
-	}
-
-}
-
-void APlayerCharacter::TargetScan() 
-{
-	TArray<AActor*> Ignore;
-	AActor* ClosestActor = nullptr;
-	TArray<FHitResult> HitArray;
-	Ignore.Add(this);
-	float ClosestDistance = m_Checkradius;
-	float Distance = 0.0f;
-
-
-	if (!m_bIsTargeting) 
-	{
-		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), GetActorLocation(), GetActorLocation(), m_Checkradius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore,
-			EDrawDebugTrace::None, HitArray, true, GREEN, FColor::Red, 0.0f))
-		{
-			for (int i = 0; i < HitArray.Num(); i++)
-			{
-				Distance = GetDistanceTo(HitArray[i].GetActor());
-
-				if (Distance < ClosestDistance)
-				{
-					ClosestDistance = Distance;
-					ClosestActor = HitArray[i].GetActor();
-					m_Target = ClosestActor;
-
-				}
-
-			}
-			if (ClosestActor == nullptr)
-			{
-
-
-			}
-
-		}
-	}
-}
-
 void APlayerCharacter::Target() 
 {
-	FVector CamOffset(0, 65, 75);
-	FVector NewOffset(0, 0, 75);
-
-
-	if (!m_bIsTargeting) 
+	if (m_bIsTargeting) 
 	{
-		m_bIsTargeting = true;
-		//CameraArm->SocketOffset = CamOffset;
+		m_bIsTargeting = false;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Not Targeting"));
 
 	}
 
 	else
 	{
-		m_bIsTargeting = false;
-		//CameraArm->SocketOffset = NewOffset;
-	}
-}
 
-void APlayerCharacter::SwitchCurrentTarget(float Value) 
-{
-	
+		m_bIsTargeting = true;
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Targeting"));
+	}
+
 }
 
 
