@@ -1,0 +1,42 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "TargetComponent.generated.h"
+
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PS2AD_API UTargetComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	// Sets default values for this component's properties
+	UTargetComponent();
+	float LockOnRadius = 1000.0f;
+	class APlayerCharacter* m_PlayerCharacter;
+
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+	TSubclassOf<class AActor> ActorClassType;
+	TArray<AActor*> Targets;
+	AActor* ClosestTarget;
+	AActor* TargetLockedOn;
+
+
+
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void TargetLockOn();
+	void TargetRelease();
+	void SphereTrace();
+	void CheckDistance();
+	float CenterDistanceCheck(AActor* Target);
+		
+};

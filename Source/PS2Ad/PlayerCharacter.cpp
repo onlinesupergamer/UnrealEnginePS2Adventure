@@ -31,11 +31,17 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationYaw = false;
 	CameraArm->TargetArmLength = 400.0f;
 
+	m_TargetComponent = CreateDefaultSubobject<UTargetComponent>(TEXT("TargetingComponent"));
+
 
 	CameraOffset = FVector(0, 35, 75);
 
 	CameraArm->SocketOffset = CameraOffset;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+
+
+	m_TargetComponent->m_PlayerCharacter = this; // <- Sidenote: I hate that I have do this here
 
 	
 }
@@ -50,6 +56,13 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (m_TargetComponent != nullptr) 
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("FOUND TARGETCOMPONENT"));
+
+
+	}
 
 
 	FallCheck();
@@ -71,7 +84,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("GamepadFire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &APlayerCharacter::SwordAttack);
-	//PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
+	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
 
 }
 
@@ -299,15 +312,16 @@ void APlayerCharacter::Target()
 	if (m_bIsTargeting) 
 	{
 		m_bIsTargeting = false;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Not Targeting"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Stopped Targeting"));
+		m_TargetComponent->TargetRelease();
 
 	}
 
 	else
 	{
-
 		m_bIsTargeting = true;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Targeting"));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Started Targeting"));
+		m_TargetComponent->TargetLockOn();
 	}
 
 }

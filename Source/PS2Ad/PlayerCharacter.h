@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "TargetComponent.h"
 #include "PlayerCharacter.generated.h"
 
 
@@ -21,11 +22,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCameraComponent* PlayerCamera;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USpringArmComponent* CameraArm;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTargetComponent* m_TargetComponent;
+	
 
-	UPROPERTY(EditAnywhere)
+
+	
 	float		LookRate = 45.0f;
 	bool		bIsPlayerFalling = false;
 	FVector2D	PlayerControllerInput;
@@ -39,6 +44,8 @@ public:
 	FVector		CameraOffset;
 	TArray<FHitResult> TargetArray;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool		m_bIsTargeting = false;
 
 
 
@@ -60,11 +67,8 @@ protected:
 	float		m_TimerThing = 0.0f;
 	float		m_BlastRadius = 75.0f;
 	float		m_Checkradius = 500.0f;
-
-	UPROPERTY(BlueprintReadWrite)
-	bool		m_bIsTargeting = false;
 	bool		m_bCanTarget = true;
-	AActor* m_Target = nullptr;
+	AActor*		m_Target = nullptr;
 
 
 	void MoveForward(float Value);
