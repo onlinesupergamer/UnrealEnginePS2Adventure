@@ -4,8 +4,14 @@
 #include "TargetComponent.h"
 #include "PlayerCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Interfaces.h"
 #include "Kismet/KismetMathLibrary.h"
 
+
+
+#define GREEN FColor::Green
+#define RED FColor::Red;
+#define Blue FColor::blue;
 
 // Sets default values for this component's properties
 UTargetComponent::UTargetComponent()
@@ -37,61 +43,27 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	
-	
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("Pass"));
-
-
-	if (ClosestTarget == nullptr) 
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("Closest Not Found"));
-
-	}
-
-	else 
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("Closest Found"));
-
-	}
-
-	//return;
-
 	if (m_PlayerCharacter->m_bIsTargeting) 
 	{
-		if (IsValid(TargetLockedOn)) 
+		if (IsValid(ClosestActor)) 
 		{
-			if (FVector::Dist(m_PlayerCharacter->GetActorLocation(), TargetLockedOn->GetActorLocation()) > LockOnRadius) 
-			{
-				TargetRelease();
-				GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("Releasing Target"));
+			GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Found Valid Actor"));
 
-			}
-
-			else
-			{
-
-				GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("In Range Target"));
-
-			}
+			RotateCamera(ClosestActor);
+			FaceTarget(ClosestActor);
 		}
+		else 
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Not Valid Actor"));
+		}
+
 	}
+
 }
 
 void UTargetComponent::TargetLockOn() 
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Started Targeting From Component"));
-
-	
 	SphereTrace();
-	CheckDistance();
-
-	if (IsValid(ClosestTarget)) 
-	{
-		m_PlayerCharacter->m_bIsTargeting = true;
-		TargetLockedOn = ClosestTarget;
-		//Call Tick Function Here
-
-	}
 
 
 
@@ -99,14 +71,7 @@ void UTargetComponent::TargetLockOn()
 
 void UTargetComponent::TargetRelease() 
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Stopped Targeting From Component"));
 	
-
-	if (IsValid(ClosestTarget))
-	{
-		m_PlayerCharacter->m_bIsTargeting = false;
-
-	}
 
 }
 
@@ -118,124 +83,85 @@ void UTargetComponent::SphereTrace()
 	
 
 	*/
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Starting Sphere Trace"));
 
-	TArray<TEnumAsByte<EObjectTypeQuery>> TypeArray;
-	TArray<AActor*> Ignore;
+
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(m_PlayerCharacter); //If there is nothing in the array, the engine crashes, this is just to stop that
 	TArray<FHitResult> HitArray;
+	TArray<TEnumAsByte<EObjectTypeQuery>> TypeArray;
 	TypeArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
-	Ignore.Add(m_PlayerCharacter);
 
-	TArray<AActor*> LocalTargets;
-
-	if (UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), m_PlayerCharacter->GetActorLocation(), m_PlayerCharacter->GetActorLocation(),
-		LockOnRadius, TypeArray, false, Ignore, EDrawDebugTrace::ForDuration, HitArray, true, FColor::Red, FColor::Yellow, 3.5f)) 
+	
+	if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), m_PlayerCharacter->GetActorLocation(), m_PlayerCharacter->GetActorLocation(),
+		LockOnRadius, TypeArray, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitArray, true, FColor::Green, FColor::Red, 3.0f))
 	{
-		for (const FHitResult &HitResult : HitArray) 
-		{
-			
-			
-			if (UKismetMathLibrary::ClassIsChildOf(HitResult.GetActor()->GetClass(), ActorClassType))
-			{
-				LocalTargets.Add(HitResult.GetActor());
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Adding Enemys To Array"));
-				
-			}
-		}
 
-		Targets = LocalTargets;
-
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Sent the Array"));
+		
+		CheckDistance(HitArray);
 
 	}
-
-	else 
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Nothing Found"));
-
-	}
+ 
 }
 
-void UTargetComponent::CheckDistance() 
+void UTargetComponent::CheckDistance(TArray<FHitResult> m_HitResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Starting Check Distance"));
-
 	/*
 		This takes the array that was from the spherecast and iterates through them to check which is closest to the camera
 	
 	
 	*/
 
-	TArray<AActor*> Ignore;
-	float LocalCompare = 0.0f;
-	AActor* LocalTarget;
-
-	for (const AActor* m_Targets : Targets) 
+	float distance = 0.0f;
+	float closestDistance = LockOnRadius;
+	AActor* m_ClosestActor;
+	
+	for (const FHitResult &HitArray : m_HitResult) 
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Starting Loop for Targets"));
+		distance = FVector::Dist(m_PlayerCharacter->GetActorLocation(), HitArray.GetActor()->GetActorLocation());
 
-		FHitResult m_Hit;
-
-		if (IsValid(m_Targets))
+		if (distance < closestDistance) 
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Targets Are Valid"));
+			closestDistance = distance;
+			m_ClosestActor = HitArray.GetActor();
 
-
-			/*
-				This casts a ray out from each element in the array to the player camera to check for line of sight
-			*/
-
-			if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), m_PlayerCharacter->PlayerCamera->GetComponentLocation(),
-				m_Targets->GetActorLocation(), UEngineTypes::ConvertToTraceType(ECC_Visibility), false, Ignore, EDrawDebugTrace::ForDuration, m_Hit, true, FColor::Red, FColor::Green, 3.0f))
+			if (IsValid(m_ClosestActor))
 			{
-				//////////////////////////////////////
-
-				if (CenterDistanceCheck(m_Hit.GetActor()) < LocalCompare)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Greater Than"));
-
-				}
-				else if (CenterDistanceCheck(m_Hit.GetActor()) > LocalCompare)
-				{
-					//I think this checks the distance of the actor from the forward vector of the player camera?
-
-					LocalCompare = CenterDistanceCheck(m_Hit.GetActor());
-					LocalTarget = m_Hit.GetActor();
-					ClosestTarget = LocalTarget;
-
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Found Closest Target"));
-
-
-
-				}
-				else
-				{
-
-				}
-
-
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Firing"));
-
-
-			}
-
-			else 
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Nothing Hit By Ray"));
-
+				//These need to be in TICK since these need to update each frame
+				ClosestActor = m_ClosestActor;
+				
 			}
 		}
-
-		else 
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Targets not valid"));
-
-		}
-
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Ending Function"));
-
-		
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::SanitizeFloat(closestDistance));
 }
+
+void UTargetComponent::RotateCamera(AActor* Target) 
+{
+	//Do Camera Things Here
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Camera"));
+
+	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
+	FVector m_TargetLocation = ClosestActor->GetActorLocation();
+	FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(m_PlayerCharacter->GetActorLocation(), m_TargetLocation);
+	m_Rot.Pitch = m_LookRotation.Pitch;
+	m_Rot.Yaw = m_LookRotation.Yaw;
+	m_Rot = UKismetMathLibrary::RInterpTo(m_PlayerCharacter->GetControlRotation(), m_Rot, GetWorld()->DeltaTimeSeconds, 5.0f);
+
+	m_PlayerCharacter->Controller->SetControlRotation(m_Rot);
+
+}
+
+void UTargetComponent::FaceTarget(AActor* Target) 
+{
+	//Do Player Rotation Here
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Player"));
+
+}
+
+
+
 
 float UTargetComponent::CenterDistanceCheck(AActor* Target)
 {

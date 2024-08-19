@@ -23,11 +23,9 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	TSubclassOf<class AActor> ActorClassType;
-	TArray<AActor*> Targets;
-	AActor* ClosestTarget;
-	AActor* TargetLockedOn;
 
+	AActor* ClosestActor;
+	
 
 
 public:	
@@ -36,7 +34,9 @@ public:
 	void TargetLockOn();
 	void TargetRelease();
 	void SphereTrace();
-	void CheckDistance();
+	void CheckDistance(TArray<FHitResult> HitArray);
 	float CenterDistanceCheck(AActor* Target);
+	void RotateCamera(AActor* Target);
+	void FaceTarget(AActor* Target);
 		
 };

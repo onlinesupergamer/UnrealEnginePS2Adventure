@@ -8,14 +8,20 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-
-
-
+#include "PlayerCameraActor.h"
 
 
 #define GREEN FColor::Green
+#define RED FColor::Red;
+#define BLUE FColor::Blue;
 
 
+/*
+	The damage interface calls could be simplfied
+
+
+
+*/
 
 
 APlayerCharacter::APlayerCharacter()
@@ -50,6 +56,7 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	
 }
 
@@ -311,17 +318,16 @@ void APlayerCharacter::Target()
 {
 	if (m_bIsTargeting) 
 	{
-		m_bIsTargeting = false;
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Stopped Targeting"));
-		m_TargetComponent->TargetRelease();
+		
 
+		m_bIsTargeting = false;
 	}
 
 	else
 	{
-		m_bIsTargeting = true;
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, GREEN, TEXT("Started Targeting"));
+		
 		m_TargetComponent->TargetLockOn();
+		m_bIsTargeting = true;
 	}
 
 }
