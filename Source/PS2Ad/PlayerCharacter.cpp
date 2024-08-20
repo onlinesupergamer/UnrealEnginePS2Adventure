@@ -46,7 +46,6 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 
-
 	m_TargetComponent->m_PlayerCharacter = this; // <- Sidenote: I hate that I have do this here
 
 	
@@ -190,11 +189,7 @@ void APlayerCharacter::HandleAiming()
 			m_Timebffr = 0.0f;
 		}
 
-		if (!m_bIsTargeting) 
-		{
-			GetCharacterMovement()->bOrientRotationToMovement = false;
-
-		}
+	
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 200.0f, 0.15f);
 
 		m_bCanTarget = false;

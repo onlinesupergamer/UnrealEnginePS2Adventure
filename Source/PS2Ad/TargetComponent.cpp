@@ -12,7 +12,8 @@
 
 #define GREEN FColor::Green
 #define RED FColor::Red;
-#define Blue FColor::blue;
+#define Blue FColor::Blue;
+
 
 // Sets default values for this component's properties
 UTargetComponent::UTargetComponent()
@@ -22,9 +23,7 @@ UTargetComponent::UTargetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	m_PlayerCharacter = Cast<APlayerCharacter>(m_PlayerCharacter);
-	
 
-	
 }
 
 
@@ -32,9 +31,6 @@ UTargetComponent::UTargetComponent()
 void UTargetComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-
-	
 	
 }
 
@@ -44,6 +40,16 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (ClosestActor == nullptr) 
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor is null"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor not null"));
+
+	}
+
 
 	if (m_PlayerCharacter->bIsAiming && m_PlayerCharacter->m_bIsTargeting)
 	{
@@ -52,16 +58,13 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (m_PlayerCharacter->m_bIsTargeting) 
 	{
-		if (IsValid(ClosestActor)) 
+		if (ClosestActor != nullptr) 
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Found Valid Actor"));
-
 			RotateCamera(ClosestActor);
 			FaceTarget(ClosestActor);
 		}
 		else 
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Not Valid Actor"));
 			TargetRelease();
 		}
 
@@ -79,8 +82,6 @@ void UTargetComponent::TargetLockOn()
 	//This starts the lock on
 	SphereTrace();
 
-
-
 }
 
 void UTargetComponent::TargetRelease() 
@@ -89,8 +90,7 @@ void UTargetComponent::TargetRelease()
 
 	m_PlayerCharacter->m_bIsTargeting = false;
 	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
-	
-
+	ClosestActor = nullptr;
 }
 
 void UTargetComponent::SphereTrace() 
