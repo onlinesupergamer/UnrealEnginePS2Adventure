@@ -23,6 +23,8 @@ UTargetComponent::UTargetComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	m_PlayerCharacter = Cast<APlayerCharacter>(m_PlayerCharacter);
+	ClosestActor = nullptr;
+
 
 }
 
@@ -42,11 +44,11 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (ClosestActor == nullptr) 
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor is null"));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor is null"));
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor not null"));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor not null"));
 
 	}
 
@@ -68,11 +70,6 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 			TargetRelease();
 		}
 
-	}
-
-	if (ClosestActor == nullptr) 
-	{
-		TargetRelease();
 	}
 
 }
@@ -101,7 +98,7 @@ void UTargetComponent::SphereTrace()
 	
 
 	*/
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Starting Sphere Trace"));
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Starting Sphere Trace"));
 
 
 	TArray<AActor*> ActorsToIgnore;
@@ -146,19 +143,18 @@ void UTargetComponent::CheckDistance(TArray<FHitResult> m_HitResult)
 			if (IsValid(m_ClosestActor))
 			{
 				//These need to be in TICK since these need to update each frame
-				ClosestActor = m_ClosestActor;
-				
+				ClosestActor = m_ClosestActor;	
 			}
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::SanitizeFloat(closestDistance));
+	//GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::SanitizeFloat(closestDistance));
 }
 
 void UTargetComponent::RotateCamera(AActor* Target) 
 {
 	//Do Camera Things Here
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Camera"));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Camera"));
 
 	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
 	FVector m_TargetLocation = Target->GetActorLocation();
@@ -169,7 +165,12 @@ void UTargetComponent::RotateCamera(AActor* Target)
 	m_Rot.Yaw = m_LookRotation.Yaw;
 	m_Rot = UKismetMathLibrary::RInterpTo(m_PlayerCharacter->GetControlRotation(), m_Rot, GetWorld()->DeltaTimeSeconds, 5.0f);
 	m_Rot.Pitch = FMath::Clamp(m_Rot.Pitch, -20.0f, 35.0f);
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, FString::SanitizeFloat(m_Rot.Pitch));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, FString::SanitizeFloat(m_Rot.Pitch));
+
+	/*
+		If the camera pitch is more than the max angle when the player starts targeting,
+		the camera snaps down to the max angle; this should not happen
+	*/
 
 	m_PlayerCharacter->Controller->SetControlRotation(m_Rot);
 
@@ -178,21 +179,20 @@ void UTargetComponent::RotateCamera(AActor* Target)
 void UTargetComponent::FaceTarget(AActor* Target) 
 {
 	//Do Player Rotation Here
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Player"));
+	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Player"));
 
 	
 	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
 	FVector m_PlayerLocation = m_PlayerCharacter->GetActorLocation();
 	FVector m_TargetLocation = Target->GetActorLocation();
 	FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(m_PlayerLocation, m_TargetLocation);
-	//m_Rot = UKismetMathLibrary::RInterpTo(m_PlayerCharacter->GetActorRotation(), m_Rot, GetWorld()->DeltaTimeSeconds, 5000.0f);
 	m_Rot = m_LookRotation;
-
 	m_Rot.Roll = 0.0f;
 	m_Rot.Pitch = 0.0f;
 
+	//FQuat m_NewRot = FQuat::Slerp(m_PlayerCharacter->GetActorRotation().Quaternion(), m_LookRotation.Quaternion(), (10.0f / GetWorld()->DeltaTimeSeconds) * GetWorld()->DeltaTimeSeconds);
 	
-	m_PlayerCharacter->SetActorRotation(m_Rot);
+	m_PlayerCharacter->SetActorRotation(m_NewRot);
 	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 

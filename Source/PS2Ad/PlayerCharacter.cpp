@@ -116,7 +116,20 @@ void APlayerCharacter::LookUp(float Value)
 {
 	if (!m_bIsTargeting) 
 	{
-		AddControllerPitchInput(-Value * LookRate * GetWorld()->GetDeltaSeconds());
+		if (bIsAiming) 
+		{
+			m_CameraInputMultiplier = 0.5f;
+
+		}
+
+		else
+		{
+			m_CameraInputMultiplier = 1.5f;
+
+
+		}
+		
+		AddControllerPitchInput((-Value * m_CameraInputMultiplier) * LookRate * GetWorld()->GetDeltaSeconds());
 	}
 
 }
@@ -125,7 +138,20 @@ void APlayerCharacter::LookRight(float Value)
 {
 	if (!m_bIsTargeting) 
 	{
-		AddControllerYawInput(Value * LookRate * GetWorld()->GetDeltaSeconds());
+		if (bIsAiming)
+		{
+			m_CameraInputMultiplier = 0.5f;
+
+		}
+
+		else
+		{
+			m_CameraInputMultiplier = 1.5f;
+
+
+		}
+
+		AddControllerYawInput((Value * m_CameraInputMultiplier)* LookRate * GetWorld()->GetDeltaSeconds());
 	}
 }
 
@@ -135,7 +161,7 @@ void APlayerCharacter::FallCheck()
 
 	if (bIsPlayerFalling) 
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Falling"));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Falling"));
 
 	}
 

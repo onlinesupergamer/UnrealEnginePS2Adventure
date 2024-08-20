@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces.h"
+#include "PlayerCharacter.h"
 #include "TestEnemy.generated.h"
 
 UCLASS()
@@ -16,8 +17,9 @@ public:
 	
 	ATestEnemy();
 	virtual void Tick(float DeltaTime) override;
-
 	float		Health		=		100.0f;
+	bool		bIsAlive	=		true;
+
 
 protected:
 	
@@ -27,5 +29,6 @@ protected:
 	virtual void SwordDamage(float Damage) override;
 	void HealthCheck();
 	void KillEnemy();
+	
 
 };

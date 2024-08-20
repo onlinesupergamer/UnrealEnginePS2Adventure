@@ -18,12 +18,13 @@ public:
 	UTargetComponent();
 	float LockOnRadius = 1000.0f;
 	class APlayerCharacter* m_PlayerCharacter;
+	AActor* ClosestActor;
+
 
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	AActor* ClosestActor;
 	
 
 

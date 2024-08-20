@@ -67,6 +67,7 @@ protected:
 	float		m_TimerThing = 0.0f;
 	float		m_BlastRadius = 75.0f;
 	float		m_Checkradius = 500.0f;
+	float		m_CameraInputMultiplier = 1.0f;
 	bool		m_bCanTarget = true;
 	AActor*		m_Target = nullptr;
 
