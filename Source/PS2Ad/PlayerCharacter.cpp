@@ -267,7 +267,7 @@ void APlayerCharacter::CharacterAimRotation(bool bCheck)
 	FQuat m_NewRot = FQuat::Slerp(CurrentRotation.Quaternion(), CamRotation.Quaternion(), (1.0f / time) * GetWorld()->DeltaTimeSeconds);
 	if (bCheck) 
 	{
-		SetActorRotation(m_NewRot, ETeleportType::None);
+		SetActorRotation(m_NewRot);
 	}
 }
 

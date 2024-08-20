@@ -180,8 +180,6 @@ void UTargetComponent::FaceTarget(AActor* Target)
 {
 	//Do Player Rotation Here
 	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Player"));
-
-	
 	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
 	FVector m_PlayerLocation = m_PlayerCharacter->GetActorLocation();
 	FVector m_TargetLocation = Target->GetActorLocation();
@@ -190,9 +188,9 @@ void UTargetComponent::FaceTarget(AActor* Target)
 	m_Rot.Roll = 0.0f;
 	m_Rot.Pitch = 0.0f;
 
-	//FQuat m_NewRot = FQuat::Slerp(m_PlayerCharacter->GetActorRotation().Quaternion(), m_LookRotation.Quaternion(), (10.0f / GetWorld()->DeltaTimeSeconds) * GetWorld()->DeltaTimeSeconds);
 	
-	m_PlayerCharacter->SetActorRotation(m_NewRot);
+
+	m_PlayerCharacter->SetActorRotation(m_Rot);
 	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
