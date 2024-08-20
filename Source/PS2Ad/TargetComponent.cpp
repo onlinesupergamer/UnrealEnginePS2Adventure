@@ -5,6 +5,7 @@
 #include "PlayerCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -43,6 +44,12 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
+	if (m_PlayerCharacter->bIsAiming && m_PlayerCharacter->m_bIsTargeting)
+	{
+		TargetRelease();
+	}
+
 	if (m_PlayerCharacter->m_bIsTargeting) 
 	{
 		if (IsValid(ClosestActor)) 
@@ -55,14 +62,21 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		else 
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Not Valid Actor"));
+			TargetRelease();
 		}
 
+	}
+
+	if (ClosestActor == nullptr) 
+	{
+		TargetRelease();
 	}
 
 }
 
 void UTargetComponent::TargetLockOn() 
 {
+	//This starts the lock on
 	SphereTrace();
 
 
@@ -71,6 +85,10 @@ void UTargetComponent::TargetLockOn()
 
 void UTargetComponent::TargetRelease() 
 {
+	//This stops the lock on
+
+	m_PlayerCharacter->m_bIsTargeting = false;
+	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 
 }
@@ -143,11 +161,15 @@ void UTargetComponent::RotateCamera(AActor* Target)
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Camera"));
 
 	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
-	FVector m_TargetLocation = ClosestActor->GetActorLocation();
-	FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(m_PlayerCharacter->GetActorLocation(), m_TargetLocation);
+	FVector m_TargetLocation = Target->GetActorLocation();
+	FVector m_PlayerLocation = m_PlayerCharacter->GetActorLocation();
+	m_PlayerLocation.Z = m_PlayerLocation.Z + 100.0f;
+	FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(m_PlayerLocation, m_TargetLocation);
 	m_Rot.Pitch = m_LookRotation.Pitch;
 	m_Rot.Yaw = m_LookRotation.Yaw;
 	m_Rot = UKismetMathLibrary::RInterpTo(m_PlayerCharacter->GetControlRotation(), m_Rot, GetWorld()->DeltaTimeSeconds, 5.0f);
+	m_Rot.Pitch = FMath::Clamp(m_Rot.Pitch, -20.0f, 35.0f);
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, FString::SanitizeFloat(m_Rot.Pitch));
 
 	m_PlayerCharacter->Controller->SetControlRotation(m_Rot);
 
@@ -158,9 +180,21 @@ void UTargetComponent::FaceTarget(AActor* Target)
 	//Do Player Rotation Here
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Rotating Player"));
 
+	
+	FRotator m_Rot = m_PlayerCharacter->Controller->GetControlRotation();
+	FVector m_PlayerLocation = m_PlayerCharacter->GetActorLocation();
+	FVector m_TargetLocation = Target->GetActorLocation();
+	FRotator m_LookRotation = UKismetMathLibrary::FindLookAtRotation(m_PlayerLocation, m_TargetLocation);
+	//m_Rot = UKismetMathLibrary::RInterpTo(m_PlayerCharacter->GetActorRotation(), m_Rot, GetWorld()->DeltaTimeSeconds, 5000.0f);
+	m_Rot = m_LookRotation;
+
+	m_Rot.Roll = 0.0f;
+	m_Rot.Pitch = 0.0f;
+
+	
+	m_PlayerCharacter->SetActorRotation(m_Rot);
+	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
-
-
 
 
 float UTargetComponent::CenterDistanceCheck(AActor* Target)

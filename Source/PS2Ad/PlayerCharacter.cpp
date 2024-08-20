@@ -115,13 +115,19 @@ void APlayerCharacter::MoveRight(float Value)
 
 void APlayerCharacter::LookUp(float Value) 
 {
-	AddControllerPitchInput(-Value * LookRate * GetWorld()->GetDeltaSeconds());
+	if (!m_bIsTargeting) 
+	{
+		AddControllerPitchInput(-Value * LookRate * GetWorld()->GetDeltaSeconds());
+	}
 
 }
 
 void APlayerCharacter::LookRight(float Value) 
 {
-	AddControllerYawInput(Value * LookRate * GetWorld()->GetDeltaSeconds());
+	if (!m_bIsTargeting) 
+	{
+		AddControllerYawInput(Value * LookRate * GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void APlayerCharacter::FallCheck() 
@@ -165,6 +171,11 @@ void APlayerCharacter::HandleAiming()
 
 	if (bIsAiming) 
 	{	
+		if (m_bIsTargeting) 
+		{
+			//return;
+		}
+
 		if (PlayerCamera->FieldOfView > minFOV)
 		{
 			FVector m_NewLocation(0, 65, 75);
@@ -179,7 +190,11 @@ void APlayerCharacter::HandleAiming()
 			m_Timebffr = 0.0f;
 		}
 
-		GetCharacterMovement()->bOrientRotationToMovement = false;
+		if (!m_bIsTargeting) 
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+
+		}
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 200.0f, 0.15f);
 
 		m_bCanTarget = false;
@@ -204,7 +219,11 @@ void APlayerCharacter::HandleAiming()
 
 		}
 
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		if (m_bIsTargeting)
+		{
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+
+		}
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 400.0f, 0.15f);
 
 		m_bCanTarget = true;
@@ -239,12 +258,6 @@ void APlayerCharacter::FireWeapon()
 		TArray<AActor*> ActorToIgnore;
 		ActorToIgnore.Add(this);
 
-		/*
-			I Hate ALL of this, WHY IS KISMET LIKE THIS
-			
-			WTF
-		
-		*/
 
 		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerCamera->GetComponentLocation(), PlayerCamera->GetComponentLocation() + (PlayerCamera->GetForwardVector() * 2500.0f),
 			15.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore, EDrawDebugTrace::ForDuration, m_Hit, true, FColor::Red, FColor::Blue, 2.0f))
@@ -316,9 +329,11 @@ void APlayerCharacter::SwordAttack()
 
 void APlayerCharacter::Target() 
 {
+
+
 	if (m_bIsTargeting) 
 	{
-		
+		m_TargetComponent->TargetRelease();
 
 		m_bIsTargeting = false;
 	}
@@ -327,6 +342,7 @@ void APlayerCharacter::Target()
 	{
 		
 		m_TargetComponent->TargetLockOn();
+
 		m_bIsTargeting = true;
 	}
 
