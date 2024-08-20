@@ -118,7 +118,7 @@ void APlayerCharacter::LookUp(float Value)
 	{
 		if (bIsAiming) 
 		{
-			m_CameraInputMultiplier = 0.5f;
+			m_CameraInputMultiplier = 0.75f;
 
 		}
 
@@ -140,7 +140,7 @@ void APlayerCharacter::LookRight(float Value)
 	{
 		if (bIsAiming)
 		{
-			m_CameraInputMultiplier = 0.5f;
+			m_CameraInputMultiplier = 0.75f;
 
 		}
 
@@ -281,7 +281,7 @@ void APlayerCharacter::FireWeapon()
 
 
 		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerCamera->GetComponentLocation(), PlayerCamera->GetComponentLocation() + (PlayerCamera->GetForwardVector() * 2500.0f),
-			15.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore, EDrawDebugTrace::ForDuration, m_Hit, true, FColor::Red, FColor::Blue, 2.0f))
+			15.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore, EDrawDebugTrace::None, m_Hit, true, FColor::Red, FColor::Blue, 2.0f))
 		{
 			if (IInterfaces* interfaces = Cast<IInterfaces>(m_Hit.GetActor())) 
 			{
@@ -301,7 +301,7 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 	ActorToIgnore.Add(this);
 
 	if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), m_HitLocation, m_HitLocation, m_BlastRadius, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
-		EDrawDebugTrace::ForDuration, HitArray, true, FColor::Red, FColor::Blue, 3.5f))
+		EDrawDebugTrace::None, HitArray, true, FColor::Red, FColor::Blue, 3.5f))
 	{
 		for (const FHitResult &HitResult : HitArray)
 		{
@@ -333,7 +333,7 @@ void APlayerCharacter::SwordAttack()
 		ActorToIgnore.Add(this);
 
 		if (UKismetSystemLibrary::SphereTraceMulti(GetWorld(), CheckLocation, CheckLocation, 75, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore,
-			EDrawDebugTrace::ForDuration, HitArray, true, FColor::Yellow, FColor::Purple, 3.5f)) 
+			EDrawDebugTrace::None, HitArray, true, FColor::Yellow, FColor::Purple, 3.5f)) 
 		{
 			for (const FHitResult &HitResult : HitArray)
 			{

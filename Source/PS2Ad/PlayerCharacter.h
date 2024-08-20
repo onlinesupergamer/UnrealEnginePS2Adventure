@@ -46,7 +46,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool		m_bIsTargeting = false;
-
+	UPROPERTY(BlueprintReadWrite)
+	AActor* m_Target = nullptr;
 
 
 
@@ -69,7 +70,8 @@ protected:
 	float		m_Checkradius = 500.0f;
 	float		m_CameraInputMultiplier = 1.0f;
 	bool		m_bCanTarget = true;
-	AActor*		m_Target = nullptr;
+
+	
 
 
 	void MoveForward(float Value);

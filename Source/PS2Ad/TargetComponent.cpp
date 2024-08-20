@@ -48,7 +48,11 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 	else
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Actor not null"));
+
+		if (FVector::Dist(ClosestActor->GetActorLocation(), m_PlayerCharacter->GetActorLocation()) > LockOnRadius)
+		{
+			TargetRelease();
+		}
 
 	}
 
@@ -71,6 +75,7 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 
 	}
+	
 
 }
 
@@ -144,6 +149,7 @@ void UTargetComponent::CheckDistance(TArray<FHitResult> m_HitResult)
 			{
 				//These need to be in TICK since these need to update each frame
 				ClosestActor = m_ClosestActor;	
+				m_PlayerCharacter->m_Target = ClosestActor;
 			}
 		}
 	}
