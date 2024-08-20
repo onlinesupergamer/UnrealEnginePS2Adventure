@@ -49,7 +49,7 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	else
 	{
 
-		if (FVector::Dist(ClosestActor->GetActorLocation(), m_PlayerCharacter->GetActorLocation()) > LockOnRadius)
+		if (FVector::Dist(ClosestActor->GetActorLocation(), m_PlayerCharacter->GetActorLocation()) > ReleaseRadius)
 		{
 			TargetRelease();
 		}
