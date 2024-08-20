@@ -16,8 +16,8 @@ class PS2AD_API UTargetComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UTargetComponent();
-	float LockOnRadius = 400.0f;
-	float ReleaseRadius = 550.0f;
+	float LockOnRadius = 650.0f;
+	float ReleaseRadius = 750.0f;
 	class APlayerCharacter* m_PlayerCharacter;
 	AActor* ClosestActor;
 

@@ -114,7 +114,7 @@ void UTargetComponent::SphereTrace()
 
 	
 	if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), m_PlayerCharacter->GetActorLocation(), m_PlayerCharacter->GetActorLocation(),
-		LockOnRadius, TypeArray, false, ActorsToIgnore, EDrawDebugTrace::ForDuration, HitArray, true, FColor::Green, FColor::Red, 3.0f))
+		LockOnRadius, TypeArray, false, ActorsToIgnore, EDrawDebugTrace::None, HitArray, true, FColor::Green, FColor::Red, 3.0f))
 	{
 
 		
