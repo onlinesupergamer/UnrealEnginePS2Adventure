@@ -35,6 +35,9 @@ public:
 	bool		bIsPlayerFalling = false;
 	FVector2D	PlayerControllerInput;
 
+	UPROPERTY(BlueprintReadWrite)
+	float		PlayerHealth = 100.0f;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool		bIsAiming = false;
 	bool		bIsTransitioning = false;

@@ -75,7 +75,6 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		}
 
 	}
-	
 
 }
 
