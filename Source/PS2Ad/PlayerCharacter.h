@@ -26,7 +26,7 @@ public:
 	USpringArmComponent* CameraArm;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTargetComponent* m_TargetComponent;
+	class UTargetComponent* m_TargetComponent;
 	
 
 

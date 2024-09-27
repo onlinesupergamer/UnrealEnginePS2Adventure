@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PlayerCharacter.h"
 #include "TargetComponent.generated.h"
 
 

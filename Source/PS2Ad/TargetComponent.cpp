@@ -2,7 +2,7 @@
 
 
 #include "TargetComponent.h"
-#include "PlayerCharacter.h"
+//#include "PlayerCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -22,7 +22,7 @@ UTargetComponent::UTargetComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	m_PlayerCharacter = Cast<APlayerCharacter>(m_PlayerCharacter);
+	m_PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
 	ClosestActor = nullptr;
 
 

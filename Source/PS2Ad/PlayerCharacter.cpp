@@ -44,36 +44,24 @@ APlayerCharacter::APlayerCharacter()
 
 	CameraArm->SocketOffset = CameraOffset;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-
-	m_TargetComponent->m_PlayerCharacter = this; // <- Sidenote: I hate that I have do this here
-
-	
 }
 
 
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (m_TargetComponent != nullptr) 
+	if (m_TargetComponent == nullptr) 
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("FOUND TARGETCOMPONENT"));
-
-
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("NO TARGET COMPONENT FOUND"));
 	}
-
-
 	FallCheck();
 	HandleAiming();
-	
 }
 
 
@@ -119,19 +107,14 @@ void APlayerCharacter::LookUp(float Value)
 		if (bIsAiming) 
 		{
 			m_CameraInputMultiplier = 0.75f;
-
 		}
 
 		else
 		{
 			m_CameraInputMultiplier = 1.5f;
-
-
 		}
-		
 		AddControllerPitchInput((-Value * m_CameraInputMultiplier) * LookRate * GetWorld()->GetDeltaSeconds());
 	}
-
 }
 
 void APlayerCharacter::LookRight(float Value) 
@@ -141,16 +124,12 @@ void APlayerCharacter::LookRight(float Value)
 		if (bIsAiming)
 		{
 			m_CameraInputMultiplier = 0.75f;
-
 		}
 
 		else
 		{
 			m_CameraInputMultiplier = 1.5f;
-
-
 		}
-
 		AddControllerYawInput((Value * m_CameraInputMultiplier)* LookRate * GetWorld()->GetDeltaSeconds());
 	}
 }
@@ -161,10 +140,8 @@ void APlayerCharacter::FallCheck()
 
 	if (bIsPlayerFalling) 
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, GREEN, TEXT("Falling"));
 
 	}
-
 }
 
 void APlayerCharacter::Aim() 
@@ -187,12 +164,6 @@ void APlayerCharacter::HandleAiming()
 {
 	float minFOV = 70.0f;
 	float maxFOV = 90.0f;
-	/*
-		Holy shit, I hate this function
-		This took too damn long to implement
-
-	*/
-
 
 	if (bIsAiming) 
 	{	
@@ -214,12 +185,8 @@ void APlayerCharacter::HandleAiming()
 		{
 			m_Timebffr = 0.0f;
 		}
-
-	
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 200.0f, 0.15f);
-
 		m_bCanTarget = false;
-
 	}
 
 	if (!bIsAiming)
@@ -231,25 +198,20 @@ void APlayerCharacter::HandleAiming()
 			m_Timebffr += GetWorld()->DeltaTimeSeconds;
 			PlayerCamera->FieldOfView = FMath::Clamp(FMath::Lerp(minFOV, maxFOV, m_Timebffr * 8), minFOV, maxFOV);
 			CameraArm->SocketOffset = m_NewLocation;
-
 		}
 
 		else
 		{
 			m_Timebffr = 0.0f;
-
 		}
 
 		if (m_bIsTargeting)
 		{
 			GetCharacterMovement()->bOrientRotationToMovement = true;
-
 		}
 		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 400.0f, 0.15f);
-
 		m_bCanTarget = true;
 	}
-
 	CharacterAimRotation(bIsAiming);
 }
 
