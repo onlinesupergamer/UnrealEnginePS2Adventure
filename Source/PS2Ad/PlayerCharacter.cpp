@@ -46,7 +46,6 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
-
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -63,7 +62,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	FallCheck();
 	HandleAiming();
 }
-
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -215,7 +213,6 @@ void APlayerCharacter::HandleAiming()
 	CharacterAimRotation(bIsAiming);
 }
 
-
 void APlayerCharacter::CharacterAimRotation(bool bCheck) 
 {
 	float time = 0.05f;
@@ -283,11 +280,28 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 	}
 }
 
-
 void APlayerCharacter::SwordAttack() 
 {
+	float CurrentDistance;
+	AActor* Target = m_TargetComponent->ClosestActor;
+
 	if (!bIsAiming) 
 	{
+		if (m_bIsTargeting) 
+		{
+			CurrentDistance = FVector::Dist(GetActorLocation(), Target->GetActorLocation());
+			GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::FromInt(CurrentDistance));
+		}
+
+		if (CurrentDistance <= 450.0f) 
+		{
+			if (Target != nullptr) 
+			{
+				//SetActorLocation(Target->GetActorLocation());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, TEXT("Close In"));
+			}
+		}
+
 		FVector CheckLocation = GetActorLocation() + (GetActorForwardVector() * 85);
 
 		TArray<FHitResult> HitArray;
@@ -312,8 +326,6 @@ void APlayerCharacter::SwordAttack()
 
 void APlayerCharacter::Target() 
 {
-
-
 	if (m_bIsTargeting) 
 	{
 		m_TargetComponent->TargetRelease();
@@ -330,7 +342,6 @@ void APlayerCharacter::Target()
 	}
 
 }
-
 
 float APlayerCharacter::QLerp(float l1, float l2, float LerpSpeed) 
 {
