@@ -77,7 +77,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("GamepadFire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("SwordAttack", IE_Pressed, this, &APlayerCharacter::SwordAttack);
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &APlayerCharacter::Target);
-
 }
 
 void APlayerCharacter::MoveForward(float Value) 
