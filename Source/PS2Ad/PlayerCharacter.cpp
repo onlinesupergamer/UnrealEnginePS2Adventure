@@ -275,7 +275,6 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 			*/
 		
 		}
-
 	}
 }
 
@@ -290,15 +289,6 @@ void APlayerCharacter::SwordAttack()
 		{
 			CurrentDistance = FVector::Dist(GetActorLocation(), Target->GetActorLocation());
 			GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::FromInt(CurrentDistance));
-		}
-
-		if (CurrentDistance <= 450.0f) 
-		{
-			if (Target != nullptr) 
-			{
-				//SetActorLocation(Target->GetActorLocation());
-				//GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, TEXT("Close In"));
-			}
 		}
 
 		FVector CheckLocation = GetActorLocation() + (GetActorForwardVector() * 85);
@@ -316,9 +306,7 @@ void APlayerCharacter::SwordAttack()
 				{
 					interfaces->SwordDamage(SwordDamage);
 				}
-
 			}
-
 		}
 	}
 }
@@ -328,15 +316,12 @@ void APlayerCharacter::Target()
 	if (m_bIsTargeting) 
 	{
 		m_TargetComponent->TargetRelease();
-
 		m_bIsTargeting = false;
 	}
 
 	else
 	{
-		
 		m_TargetComponent->TargetLockOn();
-
 		m_bIsTargeting = true;
 	}
 
