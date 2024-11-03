@@ -137,7 +137,10 @@ void APlayerCharacter::FallCheck()
 
 	if (bIsPlayerFalling) 
 	{
-
+		/*
+			This may not be needed
+		
+		*/
 	}
 }
 
