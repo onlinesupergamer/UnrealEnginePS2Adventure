@@ -254,7 +254,7 @@ void APlayerCharacter::FireWeapon()
 		ActorToIgnore.Add(this);
 
 
-		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerCamera->GetComponentLocation(), PlayerCamera->GetComponentLocation() + (PlayerCamera->GetForwardVector() * 2500.0f),
+		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerCamera->GetComponentLocation(), PlayerCamera->GetComponentLocation() + (PlayerCamera->GetForwardVector() * 6500.0f),
 			15.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore, EDrawDebugTrace::None, m_Hit, true, FColor::Red, FColor::Blue, 2.0f))
 		{
 			if (IInterfaces* interfaces = Cast<IInterfaces>(m_Hit.GetActor())) 
