@@ -1,15 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-/*
-
-
-//////////////////////////////////////
-It might be a good idea to look into
-swapping both weapon functions into their own separate components
-//////////////////////////////////////
-
-
-*/
+/*****************************************************************************
+**																			**
+**																		   	**
+**				   Copyright (C) 2024 - All Rights Reserved				   	**
+**																			**
+******************************************************************************
+**																			**
+**	Project:		Game													**
+**																			**
+**	Module:			Player Character			 							**
+**																			**
+**	Created by:		08/11/2024												**
+**																			**
+**	Script Author:	Ant														**
+**																			**
+*****************************************************************************/
 
 
 

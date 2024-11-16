@@ -1,4 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*****************************************************************************
+**																			**
+**																		   	**
+**				   Copyright (C) 2024 - All Rights Reserved				   	**
+**																			**
+******************************************************************************
+**																			**
+**	Project:		Game													**
+**																			**
+**	Module:			Player Character			 							**
+**																			**
+**	Created by:		08/11/2024												**
+**																			**
+**	Script Author:	Ant														**
+**																			**
+*****************************************************************************/
 
 #pragma once
 
@@ -20,37 +35,35 @@ class PS2AD_API APlayerCharacter : public ACharacter
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCameraComponent* PlayerCamera;
+	UCameraComponent*		PlayerCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USpringArmComponent* CameraArm;
+	USpringArmComponent*	CameraArm;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UTargetComponent* m_TargetComponent;
 	
-
-
-	
-	float		LookRate = 45.0f;
-	bool		bIsPlayerFalling = false;
+	float		LookRate				= 45.0f;
+	bool		bIsPlayerFalling		= false;
 	FVector2D	PlayerControllerInput;
 
+
 	UPROPERTY(BlueprintReadWrite)
-	float		PlayerHealth = 100.0f;
+	float		PlayerHealth			= 100.0f;
 
 	UPROPERTY(BlueprintReadOnly)
-	bool		bIsAiming = false;
-	bool		bIsTransitioning = false;
-	float		DirectRifleDamage = 20.0f;
-	float		RifleBlastDamage = 12.0f;
-	float		SwordDamage = 15.0f;
+	bool		bIsAiming				= false;
+	bool		bIsTransitioning		= false;
+	float		DirectRifleDamage		= 20.0f;
+	float		RifleBlastDamage		= 12.0f;
+	float		SwordDamage				= 15.0f;
 	FVector		CameraOffset;
 	TArray<FHitResult> TargetArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	bool		m_bIsTargeting = false;
+	bool		m_bIsTargeting			= false;
 	UPROPERTY(BlueprintReadWrite)
-	AActor* m_Target = nullptr;
+	AActor* m_Target					= nullptr;
 
 
 
@@ -67,12 +80,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	float		m_Timebffr = 0.0f;
-	float		m_TimerThing = 0.0f;
-	float		m_BlastRadius = 75.0f;
-	float		m_Checkradius = 500.0f;
+	float		m_Timebffr				= 0.0f;
+	float		m_TimerThing			= 0.0f;
+	float		m_BlastRadius			= 75.0f;
+	float		m_Checkradius			= 500.0f;
 	float		m_CameraInputMultiplier = 1.0f;
-	bool		m_bCanTarget = true;
+	bool		m_bCanTarget			= true;
 
 	
 

@@ -1,4 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*****************************************************************************
+**																			**
+**																		   	**
+**				   Copyright (C) 2024 - All Rights Reserved				   	**
+**																			**
+******************************************************************************
+**																			**
+**	Project:		Game													**
+**																			**
+**	Module:			Targeting Component			 							**
+**																			**
+**	Created by:		08/11/2024												**
+**																			**
+**	Script Author:	Ant														**
+**																			**
+*****************************************************************************/
 
 #pragma once
 

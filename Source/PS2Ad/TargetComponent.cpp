@@ -1,4 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*****************************************************************************
+**																			**
+**																		   	**
+**				   Copyright (C) 2024 - All Rights Reserved				   	**
+**																			**
+******************************************************************************
+**																			**
+**	Project:		Game													**
+**																			**
+**	Module:			Targeting Component			 							**
+**																			**
+**	Created by:		08/11/2024												**
+**																			**
+**	Script Author:	Ant														**
+**																			**
+*****************************************************************************/
 
 
 #include "TargetComponent.h"
@@ -24,20 +39,13 @@ UTargetComponent::UTargetComponent()
 
 	m_PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
 	ClosestActor = nullptr;
-
-
 }
 
-
-// Called when the game starts
 void UTargetComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-
-// Called every frame
 void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -53,9 +61,7 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		{
 			TargetRelease();
 		}
-
 	}
-
 
 	if (m_PlayerCharacter->bIsAiming && m_PlayerCharacter->m_bIsTargeting)
 	{
@@ -73,22 +79,18 @@ void UTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		{
 			TargetRelease();
 		}
-
 	}
-
 }
 
 void UTargetComponent::TargetLockOn() 
 {
 	//This starts the lock on
 	SphereTrace();
-
 }
 
 void UTargetComponent::TargetRelease() 
 {
 	//This stops the lock on
-
 	m_PlayerCharacter->m_bIsTargeting = false;
 	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true;
 	ClosestActor = nullptr;
@@ -104,23 +106,17 @@ void UTargetComponent::SphereTrace()
 	*/
 	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Starting Sphere Trace"));
 
-
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(m_PlayerCharacter); //If there is nothing in the array, the engine crashes, this is just to stop that
 	TArray<FHitResult> HitArray;
 	TArray<TEnumAsByte<EObjectTypeQuery>> TypeArray;
 	TypeArray.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
 
-	
 	if(UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), m_PlayerCharacter->GetActorLocation(), m_PlayerCharacter->GetActorLocation(),
 		LockOnRadius, TypeArray, false, ActorsToIgnore, EDrawDebugTrace::None, HitArray, true, FColor::Green, FColor::Red, 3.0f))
 	{
-
-		
 		CheckDistance(HitArray);
-
 	}
- 
 }
 
 void UTargetComponent::CheckDistance(TArray<FHitResult> m_HitResult)
@@ -152,7 +148,6 @@ void UTargetComponent::CheckDistance(TArray<FHitResult> m_HitResult)
 			}
 		}
 	}
-
 	//GEngine->AddOnScreenDebugMessage(-1, 2.5f, FColor::Green, FString::SanitizeFloat(closestDistance));
 }
 
@@ -178,7 +173,6 @@ void UTargetComponent::RotateCamera(AActor* Target)
 	*/
 
 	m_PlayerCharacter->Controller->SetControlRotation(m_Rot);
-
 }
 
 void UTargetComponent::FaceTarget(AActor* Target) 
@@ -193,8 +187,6 @@ void UTargetComponent::FaceTarget(AActor* Target)
 	m_Rot.Roll = 0.0f;
 	m_Rot.Pitch = 0.0f;
 
-	
-
 	m_PlayerCharacter->SetActorRotation(m_Rot);
 	m_PlayerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
 }
@@ -208,7 +200,6 @@ float UTargetComponent::CenterDistanceCheck(AActor* Target)
 		
 		return FVector::DotProduct(UKismetMathLibrary::FindLookAtRotation(Target->GetActorLocation(),
 			m_PlayerCharacter->GetActorLocation()).Vector(), m_PlayerCharacter->PlayerCamera->GetForwardVector());
-		
 	}
 
 	return 0.0f;
