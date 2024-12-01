@@ -65,6 +65,10 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (Base != nullptr) 
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), Base, 0.25f);
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -77,7 +81,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 	FallCheck();
 	HandleAiming();
-	
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
