@@ -47,9 +47,6 @@ public:
 	bool		bIsPlayerFalling		= false;
 	FVector2D	PlayerControllerInput;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class USoundBase* Base;
-
 	UPROPERTY(BlueprintReadWrite)
 	float		PlayerHealth			= 100.0f;
 

@@ -30,6 +30,11 @@ void ABGMController::Tick(float DeltaTime)
 
 void ABGMController::PlayMusic() 
 {
+	if (!bPlayBGM) 
+	{
+		return;
+	}
+
 	if (BGMusic != nullptr)
 	{
 		UGameplayStatics::PlaySound2D(GetWorld(), BGMusic, 0.35f);

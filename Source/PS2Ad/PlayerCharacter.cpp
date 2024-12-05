@@ -51,7 +51,7 @@ APlayerCharacter::APlayerCharacter()
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	PlayerCamera->SetupAttachment(CameraArm);
 	bUseControllerRotationYaw = false;
-	CameraArm->TargetArmLength = 400.0f;
+	CameraArm->TargetArmLength = 275.0f;
 
 	m_TargetComponent = CreateDefaultSubobject<UTargetComponent>(TEXT("TargetingComponent"));
 
@@ -65,10 +65,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Base != nullptr) 
-	{
-		UGameplayStatics::PlaySound2D(GetWorld(), Base, 0.25f);
-	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -229,7 +225,7 @@ void APlayerCharacter::HandleAiming()
 		{
 			GetCharacterMovement()->bOrientRotationToMovement = true;
 		}
-		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 400.0f, 0.15f);
+		CameraArm->TargetArmLength = QLerp(CameraArm->TargetArmLength, 275.0f, 0.15f);
 		m_bCanTarget = true;
 	}
 	CharacterAimRotation(bIsAiming);
@@ -260,7 +256,6 @@ void APlayerCharacter::FireWeapon()
 		TArray<AActor*> ActorToIgnore;
 		ActorToIgnore.Add(this);
 
-
 		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), PlayerCamera->GetComponentLocation(), PlayerCamera->GetComponentLocation() + (PlayerCamera->GetForwardVector() * 6500.0f),
 			15.0f, UEngineTypes::ConvertToTraceType(ECC_Visibility), false, ActorToIgnore, EDrawDebugTrace::None, m_Hit, true, FColor::Red, FColor::Blue, 2.0f))
 		{
@@ -268,9 +263,7 @@ void APlayerCharacter::FireWeapon()
 			{
 				interfaces->Damage(DirectRifleDamage);
 			}
-
 			BlastFire(m_Hit.Location);
-
 		}
 	}	
 }
@@ -296,7 +289,6 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 				Edit: nvm, I just forgot to use the array as a reference
 			
 			*/
-		
 		}
 	}
 }
