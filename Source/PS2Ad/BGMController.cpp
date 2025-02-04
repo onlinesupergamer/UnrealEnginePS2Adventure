@@ -30,13 +30,25 @@ void ABGMController::Tick(float DeltaTime)
 
 void ABGMController::PlayMusic() 
 {
-	if (!bPlayBGM) 
+	if (bPlayBGM) 
 	{
-		return;
-	}
+		if (bUseFullSongList) 
+		{
+			if (MusicArray.Num() > 0) 
+			{
+				int32 SongIndex;
+				SongIndex = FMath::RandRange(0, 2);
+				UGameplayStatics::PlaySound2D(GetWorld(), MusicArray[SongIndex], 0.35f);
+			}
+		}
 
-	if (BGMusic != nullptr)
-	{
-		UGameplayStatics::PlaySound2D(GetWorld(), BGMusic, 0.35f);
+		else
+		{
+			if (BGMusic != nullptr) 
+			{
+				UGameplayStatics::PlaySound2D(GetWorld(), BGMusic, 0.35f);
+			}
+			
+		}
 	}
 }

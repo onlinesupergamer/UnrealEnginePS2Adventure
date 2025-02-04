@@ -17,8 +17,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USoundBase* BGMusic;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<USoundBase*> MusicArray;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bPlayBGM;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bUseFullSongList;
 
 	void PlayMusic();
 

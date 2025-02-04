@@ -283,12 +283,6 @@ void APlayerCharacter::BlastFire(FVector m_HitLocation)
 			{
 				interfaces->BlastDamage(RifleBlastDamage);
 			}
-
-			/*
-				This is slow so might want to see about fixing this later
-				Edit: nvm, I just forgot to use the array as a reference
-			
-			*/
 		}
 	}
 }
