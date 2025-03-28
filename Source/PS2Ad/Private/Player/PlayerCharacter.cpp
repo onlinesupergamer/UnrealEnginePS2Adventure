@@ -17,14 +17,14 @@
 
 
 
-#include "PlayerCharacter.h"
+#include "../../Public/Player/PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Interfaces.h"
+#include "../../Public/Interfaces/Interfaces.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "PlayerCameraActor.h"
+
 
 
 #define GREEN FColor::Green
@@ -38,6 +38,7 @@
 
 
 */
+
 
 
 APlayerCharacter::APlayerCharacter()

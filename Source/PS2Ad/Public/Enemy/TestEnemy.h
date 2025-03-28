@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interfaces.h"
-#include "PlayerCharacter.h"
+#include "../../Public/Interfaces/Interfaces.h"
+#include "../../Public/Player/PlayerCharacter.h"
 #include "TestEnemy.generated.h"
 
 UCLASS()

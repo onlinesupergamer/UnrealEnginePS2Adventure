@@ -16,10 +16,9 @@
 *****************************************************************************/
 
 
-#include "TargetComponent.h"
-//#include "PlayerCharacter.h"
+#include "../../Public/Components/TargetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Interfaces.h"
+#include "../../Public/Interfaces/Interfaces.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 

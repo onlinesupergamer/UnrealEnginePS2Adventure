@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "TestEnemy.h"
+#include "../../Public/Enemy/TestEnemy.h"
 #include "Kismet/GameplayStatics.h"
 
 

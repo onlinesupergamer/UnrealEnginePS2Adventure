@@ -21,7 +21,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "TargetComponent.h"
+#include "../../Public/Components/TargetComponent.h"
 #include "PlayerCharacter.generated.h"
 
 

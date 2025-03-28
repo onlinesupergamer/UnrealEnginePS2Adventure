@@ -19,7 +19,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PlayerCharacter.h"
+#include "../../Public/Player/PlayerCharacter.h"
 #include "TargetComponent.generated.h"
 
 
