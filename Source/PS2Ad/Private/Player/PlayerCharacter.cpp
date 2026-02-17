@@ -72,7 +72,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (m_TargetComponent == nullptr) 
+	if (m_TargetComponent == ((void*)0))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, TEXT("NO TARGET COMPONENT FOUND"));
 	}
